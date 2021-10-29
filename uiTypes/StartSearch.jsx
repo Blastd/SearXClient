@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { ResultPage } from './ResultPage';
+import LanguageSetting from './LanguageSetting';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -100,6 +101,7 @@ export default function StartSearch() {
                 <FontAwesomeIcon size={20} icon={ faSearch } style={styles.search_icon}/>
             </TouchableHighlight>
           </View>
+          <LanguageSetting name="key">g</LanguageSetting>
       </ScrollView>
       </SafeAreaView>
   );
