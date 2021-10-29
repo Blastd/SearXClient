@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
-import {View, Text, NativeModules, StyleSheet, SafeAreaView, ScrollView, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
+import { View, Text, NativeModules, StyleSheet, SafeAreaView, ScrollView, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Sanitizer } from 'sanitize';
 import SingleResult from './SingleResult';
-import '../lib/storage';
+import {loadLanguage} from '../lib/languageMan';
 
 var textRef = "";
 export default class ResultPage extends React.Component {
@@ -20,15 +20,15 @@ export default class ResultPage extends React.Component {
     };
   }
 
-  executeSearch = function(queryData) {
-      let lang = "it_IT";
+  executeSearch = async function(queryData) {
+      let lang = await loadLanguage();
       if(queryData.length>0){
         //console.log("request");
         var url = "https://searx.sunless.cloud/search";
         var sanitizer = new Sanitizer();
         var saneInput = sanitizer.str(queryData);
         var encodedQueryData = encodeURIComponent(saneInput);
-        var urlParameter = "q=" + encodedQueryData + "&language=" + lang + "&pageno=" + this.state.pageno + "&format=json";
+        var urlParameter = "q=" + encodedQueryData + "&language=" + lang.replace("_", "-") + "&pageno=" + this.state.pageno + "&format=json";
         var parent = this;
         /*if(Linking.canOpenURL(fullRequest))
         Linking.openURL(fullRequest);*/
