@@ -6,8 +6,10 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Sanitizer } from 'sanitize';
 import SingleResult from './SingleResult';
 import {loadLanguage} from '../lib/languageMan';
+import {ObjectFilter} from '../lib/objects';
 
 var textRef = "";
+
 export default class ResultPage extends React.Component {
 
   constructor(props){
@@ -20,30 +22,86 @@ export default class ResultPage extends React.Component {
     };
   }
 
-  executeSearch = async function(queryData) {
+  RequestData = async function(url, method, data){
+    return new Promise(function (resolve, reject) {
+      let xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      if(method === 'POST')
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onload = function(){
+        if(this.status >=200 && this.status < 300)
+          resolve(xhr.response);
+        else
+          resolve({
+            error: 'error',
+            status: this.status,
+            statusText: this.statusText
+          });
+      };
+      xhr.onerror = function(evt){
+        resolve({
+          error: 'error',
+          status: this.status,
+          statusText: this.statusText
+        });
+      };
+    xhr.send(data);
+    });
+  };
+
+  RunPrintCommand = function(address, data){
+    console.log(address);
+    if(data.tls!=null)
+    console.log(data.tls.grade);
+    if(data.html!=null)
+    console.log(data.html.grade);
+    console.log("-----------------------");
+    return true;
+    
+  };
+
+  getInstances = async function(){
+    var instances = null;
+    var instancesUrl = "https://searx.space/data/instances.json";
+    instances = await this.RequestData(instancesUrl, 'GET', null);
+    console.log("parsing instances");
+    instances = JSON.parse(instances).instances;
+    instances = ObjectFilter(instances, ([address, data])=> data.network_type === 'normal' && 
+                                                            address.indexOf('.i2p')<0 &&
+                                                            data.error == null &&
+                                                            //this.RunPrintCommand(address, data) &&
+                                                            (data.html!=null)?(["Cjs", "E", "E, js\?", "js\?"].includes(data.html.grade)==false):false &&
+                                                            (data.tls!=null)?(data.tls.grade.indexOf('F')<0):false &&
+                                                            (data.tls!=null)?(data.tls.grade.indexOf('E')<0):false
+                                                            );
+    return Object.keys(instances)[Math.round(Math.random()*Object.keys(instances).length-1)];
+  };
+
+  executeSearch = async function(queryData, currAttempts) {
       let lang = await loadLanguage();
       if(queryData.length>0){
-        //console.log("request");
-        var url = "https://searx.sunless.cloud/search";
+        var max = 5;
+        var attempts = currAttempts!=null?currAttempts:0;
+        console.log("attempt " + attempts);
+        var url = await this.getInstances();
+        if(url == null) var url = "https://searx.sunless.cloud/";
+        url +="search";
         var sanitizer = new Sanitizer();
         var saneInput = sanitizer.str(queryData);
         var encodedQueryData = encodeURIComponent(saneInput);
         var urlParameter = "q=" + encodedQueryData + "&language=" + lang.replace("_", "-") + "&pageno=" + this.state.pageno + "&format=json";
         var parent = this;
-        /*if(Linking.canOpenURL(fullRequest))
-        Linking.openURL(fullRequest);*/
-        //console.log(urlParameter);
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function(){
-          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            parent.setState({results: this.response, hasSearched: true});
+        console.log(url + "?"+urlParameter);
+        var result = await this.RequestData(url, 'POST', urlParameter);
+        if(result.error !=null){
+          if(attempts<5){
+            attempts+=1;
+            this.executeSearch(attempts);
           }else{
-            console.log("Error @" + url+urlParameter + " status = " + this.status);
+            parent.setState({results: {message: 'error_too_many_attempts'}, hasSearched: true});  
           }
-        };
-        xhr.send(urlParameter);
+        }else
+          parent.setState({results: result, hasSearched: true});
       }
   };
 
@@ -71,7 +129,7 @@ export default class ResultPage extends React.Component {
         color:'#fff'
       }
     });
-
+    console.log("parsing results");
     let resultsObj = JSON.parse(this.state.results);
     //console.log(resultsObj.results.length);
     return (<Fragment>
@@ -164,7 +222,10 @@ export default class ResultPage extends React.Component {
       });
       let resultEntries = (<Fragment></Fragment>);
       if(this.state.results!=null){
-        resultEntries = this.parseResults();
+        if(this.state.results.message !=null)
+          resultEntries = (<Fragment><Text>Error Too many attempts</Text></Fragment>)
+        else
+          resultEntries = this.parseResults();
       }
 
       return(

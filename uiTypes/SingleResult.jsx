@@ -81,7 +81,7 @@ export default function SingleResult({url, pretty_url, title, content, engine}) 
     }
 
     return (<View style={styles.resultBody}>
-        <TouchableOpacity onPress={()=>{if(Linking.canOpenURL(url)){Linking.openURL(url);}}}>
+        <TouchableOpacity onPress={()=>{if(url!=null){if(Linking.canOpenURL(url)){Linking.openURL(url);}}}}>
         <Text selectable={true} style={styles.resultPrettyUrl}>{pretty_url}</Text>
         <Text selectable={true} style={styles.resultTitle}>{title}</Text>
         <Text selectable={true} ellipsizeMode="head" style={styles.resultContent}>{content}</Text>
