@@ -23,6 +23,7 @@ import {
   Linking
 } from 'react-native';
 import ResultPage from './uiTypes/ResultPage';
+import { Fragment } from 'react/cjs/react.production.min';
 
 export default function App() {
 
@@ -30,17 +31,20 @@ export default function App() {
   //alert(Appearance.getColorScheme());
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen
-          name="StartSearchUi"
-          component={StartSearch}
-          options={{title: 'Welcome'}}/>
-        <Stack.Screen
-          name="SearchResultUi"
-          component={ResultPage}
-          options={{title: 'Welcome'}}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Fragment>
+      <StatusBar backgroundColor="#22aa77" barStyle="default"/>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen
+            name="StartSearchUi"
+            component={StartSearch}
+            options={{title: 'Welcome'}}/>
+          <Stack.Screen
+            name="SearchResultUi"
+            component={ResultPage}
+            options={{title: 'Welcome'}}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Fragment>
   );
 }

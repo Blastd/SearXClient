@@ -4,7 +4,6 @@ import LanguageSetting from './LanguageSetting';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import '../lib/storage';
 import PropTypes from 'prop-types';
 
 import {

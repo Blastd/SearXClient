@@ -1,7 +1,9 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faGlobeAfrica } from '@fortawesome/free-solid-svg-icons';
 import { Picker } from '@react-native-picker/picker';
+import {readData, writeData} from '../lib/storage';
+import * as Localization from 'expo-localization';
 import {
     StyleSheet,
     Text,
@@ -12,14 +14,26 @@ import {
     Appearance,
     Linking
 } from 'react-native';
-
 export default class LanguageSetting extends Component {
-
+    
     constructor(){
         super();
         this.state = {
-            selectedLang: null
-          };
+            selectedLanguage: null
+        };
+        this.loadLanguage();
+    };
+
+    async setLanguage(value){
+        this.setState({selectedLanguage: value});
+        writeData("language", value);
+    };
+
+    async loadLanguage(){
+        var readLanguage = await readData("language");        
+        if(!readLanguage)
+            readLanguage = Localization.locale.replace("-","_");
+        this.setState({selectedLanguage: readLanguage});
     }
 
     render(){
@@ -51,11 +65,13 @@ export default class LanguageSetting extends Component {
 
         return (<View style={styles.resultBody}>
                     <TouchableOpacity>
-                        <Picker style={styles.engineText}>
-                            <Picker.Item label="🇮🇹 Italiano" />
-                            <Picker.Item label="🇺🇸 English" />
-                            <Picker.Item label="🇬🇧 English" />
-                            <Picker.Item label="🇫🇷 French" />
+                        <Picker style={styles.engineText}
+                            selectedValue={this.state.selectedLanguage}
+                            onValueChange={(itemValue, itemIndex) =>this.setLanguage(itemValue)}>
+                            <Picker.Item label="🇮🇹 Italiano" value="it_IT" />
+                            <Picker.Item label="🇺🇸 English" value="en_US"/>
+                            <Picker.Item label="🇬🇧 English" value="en_GB"/>
+                            <Picker.Item label="🇫🇷 French" value="fr_FR"/>
                         </Picker>    
                     </TouchableOpacity>
                 </View>);

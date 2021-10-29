@@ -5,6 +5,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Sanitizer } from 'sanitize';
 import SingleResult from './SingleResult';
+import '../lib/storage';
 
 var textRef = "";
 export default class ResultPage extends React.Component {
@@ -19,7 +20,8 @@ export default class ResultPage extends React.Component {
     };
   }
 
-  executeSearch = function(queryData, lang) {
+  executeSearch = function(queryData) {
+      let lang = "it_IT";
       if(queryData.length>0){
         //console.log("request");
         var url = "https://searx.sunless.cloud/search";
@@ -91,9 +93,9 @@ export default class ResultPage extends React.Component {
   }
 
   render(){
-      var {lang, query} = this.props.route.params;
-      if(lang && query && this.state.hasSearched == false)
-          this.executeSearch(query, lang);
+      var {query} = this.props.route.params;
+      if(query && this.state.hasSearched == false)
+          this.executeSearch(query);
 
       var styles = StyleSheet.create({
           container: {
@@ -168,8 +170,8 @@ export default class ResultPage extends React.Component {
       return(
           <SafeAreaView style={styles.container}>
               <View style={styles.search_box_container}>
-                <TextInput onChangeText={value=>{textRef = value; console.log(value);}} defaultValue={query} onSubmitEditing={(e)=>{this.executeSearch(textRef, lang);}} style={styles.search_box} returnKeyType='search'></TextInput>
-                <TouchableHighlight style={styles.search_button} onPress={()=>{this.executeSearch(textRef, lang)}}>
+                <TextInput onChangeText={value=>{textRef = value; console.log(value);}} defaultValue={query} onSubmitEditing={(e)=>{this.executeSearch(textRef);}} style={styles.search_box} returnKeyType='search'></TextInput>
+                <TouchableHighlight style={styles.search_button} onPress={()=>{this.executeSearch(textRef)}}>
                     <FontAwesomeIcon size={20} icon={ faSearch } style={styles.search_icon}/>
                 </TouchableHighlight>
               </View>
