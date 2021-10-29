@@ -14,6 +14,7 @@ import {
     Appearance,
     Linking
 } from 'react-native';
+import { languageList } from '../lib/languageMan';
 export default class LanguageSetting extends Component {
     
     constructor(){
@@ -51,6 +52,7 @@ export default class LanguageSetting extends Component {
                 color: '#bbb',
                 fontWeight: '400',
                 fontSize: 13,
+                backgroundColor: '#444',
             },
             engineIcon:{
                 color: '#fff',
@@ -60,18 +62,21 @@ export default class LanguageSetting extends Component {
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'flex-end'
+            },
+            itemStyle:{
+                backgroundColor: '#444',
+                color: '#fff'
             }
         });
 
         return (<View style={styles.resultBody}>
                     <TouchableOpacity>
-                        <Picker style={styles.engineText}
+                        <Picker itemStyle={styles.itemStyle} mode="dropdown" dropdownIconColor="#fff" dropdownIconRippleColor="#22aa77" style={styles.engineText}
                             selectedValue={this.state.selectedLanguage}
                             onValueChange={(itemValue, itemIndex) =>this.setLanguage(itemValue)}>
-                            <Picker.Item label="🇮🇹 Italiano" value="it_IT" />
-                            <Picker.Item label="🇺🇸 English" value="en_US"/>
-                            <Picker.Item label="🇬🇧 English" value="en_GB"/>
-                            <Picker.Item label="🇫🇷 French" value="fr_FR"/>
+                                {languageList.map((resultEntry, i) => {
+                                    return (<Picker.Item key={i} style={styles.itemStyle} label={resultEntry[0]} value={resultEntry[1]} />)
+                                })}
                         </Picker>    
                     </TouchableOpacity>
                 </View>);
