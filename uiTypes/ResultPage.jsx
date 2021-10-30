@@ -6,7 +6,8 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Sanitizer } from 'sanitize';
 import SingleResult from './SingleResult';
 import {loadLanguage} from '../lib/languageMan';
-import {ObjectFilter} from '../lib/objects';
+import {RequestData} from '../lib/network';
+import {hasJsonStructure, ObjectFilter} from '../lib/objects';
 
 var textRef = "";
 
@@ -22,33 +23,6 @@ export default class ResultPage extends React.Component {
     };
   }
 
-  RequestData = async function(url, method, data){
-    return new Promise(function (resolve, reject) {
-      let xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      if(method === 'POST')
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.onload = function(){
-        if(this.status >=200 && this.status < 300)
-          resolve(xhr.response);
-        else
-          resolve({
-            error: 'error',
-            status: this.status,
-            statusText: this.statusText
-          });
-      };
-      xhr.onerror = function(evt){
-        resolve({
-          error: 'error',
-          status: this.status,
-          statusText: this.statusText
-        });
-      };
-    xhr.send(data);
-    });
-  };
-
   RunPrintCommand = function(address, data){
     console.log(address);
     if(data.tls!=null)
@@ -63,9 +37,10 @@ export default class ResultPage extends React.Component {
   getInstances = async function(){
     var instances = null;
     var instancesUrl = "https://searx.space/data/instances.json";
-    instances = await this.RequestData(instancesUrl, 'GET', null);
+    instances = await RequestData(instancesUrl, 'GET', null);
     console.log("parsing instances");
-    instances = JSON.parse(instances).instances;
+    if(hasJsonStructure(instances));
+      instances = JSON.parse(instances).instances;
     instances = ObjectFilter(instances, ([address, data])=> data.network_type === 'normal' && 
                                                             address.indexOf('.i2p')<0 &&
                                                             data.error == null &&
@@ -92,7 +67,7 @@ export default class ResultPage extends React.Component {
         var urlParameter = "q=" + encodedQueryData + "&language=" + lang.replace("_", "-") + "&pageno=" + this.state.pageno + "&format=json";
         var parent = this;
         console.log(url + "?"+urlParameter);
-        var result = await this.RequestData(url, 'POST', urlParameter);
+        var result = await RequestData(url, 'POST', urlParameter);
         if(result.error !=null){
           if(attempts<5){
             attempts+=1;
