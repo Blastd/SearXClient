@@ -16,7 +16,7 @@ import {
   } from 'react-native';
 import { Fragment } from 'react';
 
-export default function SingleResult({url, pretty_url, title, content, engine}) {
+export default function Infobox({title, url, content, image, engine}) {
     let styles = StyleSheet.create({
         resultBody: {
             backgroundColor: '#444',
@@ -55,6 +55,9 @@ export default function SingleResult({url, pretty_url, title, content, engine}) 
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'flex-end'
+        },
+        image_infobox:{
+
         }
     });
     let engineIcon = null;
@@ -79,11 +82,12 @@ export default function SingleResult({url, pretty_url, title, content, engine}) 
                 break;
         }
     }
-
     return (<View style={styles.resultBody}>
         <TouchableOpacity onPress={()=>{if(url.length>0){if(Linking.canOpenURL((url.length>0)?url:"http://")){Linking.openURL((url.length>0)?url:"http://");}}}}>
-        <Text selectable={true} style={styles.resultPrettyUrl}>{pretty_url}</Text>
         <Text selectable={true} style={styles.resultTitle}>{title}</Text>
+        {image!="" &&
+            <Image source={{uri: image}} style={styles.image_infobox}></Image>
+        }
         <Text selectable={true} ellipsizeMode="head" style={styles.resultContent}>{content}</Text>
         {engine!=null && (
             <View style={styles.engineList}>
