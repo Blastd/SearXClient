@@ -16,7 +16,7 @@ import {
   } from 'react-native';
 import { Fragment } from 'react';
 
-export default function Infobox({title, url, content, image, engine}) {
+export default function Infobox({title, url, content, image, engine, urls}) {
     let styles = StyleSheet.create({
         resultBody: {
             backgroundColor: '#444',
@@ -57,7 +57,10 @@ export default function Infobox({title, url, content, image, engine}) {
             justifyContent: 'flex-end'
         },
         image_infobox:{
-
+            width: '100%',
+            height: 200,
+            resizeMode: 'contain',
+            marginBottom: 10
         }
     });
     let engineIcon = null;
@@ -82,13 +85,28 @@ export default function Infobox({title, url, content, image, engine}) {
                 break;
         }
     }
+    console.log(image);
     return (<View style={styles.resultBody}>
-        <TouchableOpacity onPress={()=>{if(url.length>0){if(Linking.canOpenURL((url.length>0)?url:"http://")){Linking.openURL((url.length>0)?url:"http://");}}}}>
-        <Text selectable={true} style={styles.resultTitle}>{title}</Text>
-        {image!="" &&
+        <TouchableOpacity>
+        <Text selectable={true} onPress={()=>{if(url.length>0){if(Linking.canOpenURL((url.length>0)?url:"http://")){Linking.openURL((url.length>0)?url:"http://");}}}}
+         style={styles.resultTitle}>{title}</Text>
+        {(image!="" && image !=null   ) &&
             <Image source={{uri: image}} style={styles.image_infobox}></Image>
         }
         <Text selectable={true} ellipsizeMode="head" style={styles.resultContent}>{content}</Text>
+        {(urls!="" && urls!=null) &&(
+            <Fragment>
+                <Text style={styles.resultTitle}>Link:</Text>
+                {urls.map((urlEntry, i) =>{
+                    return (
+                        <TouchableOpacity>
+                            <Text onPress={()=>{if(urlEntry.url.length>0){if(Linking.canOpenURL((urlEntry.url.length>0)?urlEntry.url:"http://")){Linking.openURL((urlEntry.url.length>0)?urlEntry.url:"http://");}}}}
+                            style={styles.resultTitle}>{urlEntry.title}</Text>
+                         </TouchableOpacity>
+                         )
+                })}
+            </Fragment>
+        )}
         {engine!=null && (
             <View style={styles.engineList}>
                 {engineIcon}

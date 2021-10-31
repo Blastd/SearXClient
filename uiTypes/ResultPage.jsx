@@ -126,7 +126,7 @@ export default class ResultPage extends React.Component {
       console.log("There are infoboxes");
       infoboxList = (<Fragment>
         {resultsObj.infoboxes.map((infoboxEntry, i) =>{
-         return (<Infobox title={infoboxEntry.infobox} url={infoboxEntry.id} content={infoboxEntry.content} image={infoboxEntry.img_src} engine={infoboxEntry.engine}/>)
+         return (<Infobox title={infoboxEntry.infobox} url={infoboxEntry.id} content={infoboxEntry.content} image={infoboxEntry.img_src} engine={infoboxEntry.engine} urls={infoboxEntry.urls}/>)
         })} 
       </Fragment>);     
     }
