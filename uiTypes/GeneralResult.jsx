@@ -6,68 +6,22 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Sanitizer } from 'sanitize';
 import SingleResult from './SingleResult';
 import ErrorResult from './ErrorResult';
-import CategoryBar from './CategoryBar';
 import Infobox from './Infobox';
 import {loadLanguage} from '../lib/languageMan';
 import {RequestData} from '../lib/network';
 import {hasJsonStructure, ObjectFilter} from '../lib/objects';
 
-var textRef = "";
-
-/**
- * This is the generic search result page which wraps every search result screen.
- * The query is passed here via props and by default it is given the generic search result.
- */
 export default class ResultPage extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
-      results: null,
-      currentInstance: 'https://searx.sunless.cloud/',
-      hasSearched: false,
+      results: props.results,
+      currentInstance: props.instance,
       errorType: 0,
-      pageno: 1,
+      resultType: props.type,
     };
   }
-
-  RunPrintCommand = function(address, data){
-    console.log(address);
-    if(data.version!=null)
-    console.log(data.version);
-    console.log("-----------------------");
-    return true;
-    
-  };
-
-  executeSearch = async function(queryData, newInstance, currAttempts) {
-      if(queryData.length<0)return;
-      return;
-      let lang = await loadLanguage();
-      var max = 5;
-      var attempts = (currAttempts!=null)?currAttempts:0;
-      console.log("attempt " + attempts);
-      console.log("mem instance: " + this.state.currentInstance);
-      var url = (newInstance!=null)?newInstance:((this.state.currentInstance!=null)?this.state.currentInstance:await this.getInstance());
-      //if(url == null) url = "https://searx.sunless.cloud/"; //Fallback
-      var sanitizer = new Sanitizer();
-      var saneInput = sanitizer.str(queryData);
-      var encodedQueryData = encodeURIComponent(saneInput);
-      var urlParameter = "q=" + encodedQueryData + "&language=" + lang.replace("_", "-") + "&pageno=" + this.state.pageno + "&format=json";
-      console.log(url+ 'search' + "?"+urlParameter);
-      var result = await RequestData(url+'search', 'POST', urlParameter);
-      if(result.error !=null){
-        if(attempts<5){
-          attempts+=1;
-          this.executeSearch(queryData, url, attempts);
-        }else{
-          this.setState({errorType: 429, hasSearched: true});  
-        }
-      }else{
-        console.log("updating state result = " + typeof result);
-        this.setState({results: result, errorType: 0, currentInstance: url,  hasSearched: true});
-      }
-  };
 
   parseResults = function(){
 
@@ -95,10 +49,7 @@ export default class ResultPage extends React.Component {
     });
     console.log("parsing results");
     let resultsObj = this.state.results;
-    console.log(typeof resultsObj);
-    if(typeof resultsObj !== 'object'){
-      resultsObj = JSON.parse(this.state.results);
-    }
+    if(typeof resultsObj !== 'object'){resultsObj = JSON.parse(this.state.results);}
     let infoboxList = null;
     if(Object.keys(resultsObj.infoboxes).length>0){
       console.log("There are infoboxes");
@@ -108,10 +59,9 @@ export default class ResultPage extends React.Component {
         })} 
       </Fragment>);     
     }
-    console.log(resultsObj.results.length);
+    //console.log(resultsObj.results.length);
     return (<Fragment>
       {infoboxList}
-
       {resultsObj.results.map((resultEntry, i) => {
         return (<SingleResult key={i} title={resultEntry.title} pretty_url={resultEntry.pretty_url} url={resultEntry.url} content={resultEntry.content} engine={resultEntry.engine}/>)
       })}
@@ -142,9 +92,6 @@ export default class ResultPage extends React.Component {
       var styles = StyleSheet.create({
           container: {
             flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
             backgroundColor: "#222222",
             justifyContent: "center",
           },
@@ -154,8 +101,7 @@ export default class ResultPage extends React.Component {
             flexDirection: 'row',
             alignItems: 'flex-start',
             justifyContent: 'center',
-            marginTop: 180,
-            marginBottom: 10
+            marginTop: 110,
           },
           scroll_box:{
             display: 'flex',
@@ -227,7 +173,6 @@ export default class ResultPage extends React.Component {
                 </TouchableHighlight>
               </View>
               <View style={styles.result_container}>
-              <CategoryBar/>
               <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
                   {resultEntries}
               </ScrollView>
