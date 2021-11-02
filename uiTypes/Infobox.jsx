@@ -90,20 +90,19 @@ export default function Infobox({title, url, content, image, engine, urls}) {
         <TouchableOpacity>
         <Text selectable={true} onPress={()=>{if(url.length>0){if(Linking.canOpenURL((url.length>0)?url:"http://")){Linking.openURL((url.length>0)?url:"http://");}}}}
          style={styles.resultTitle}>{title}</Text>
+         </TouchableOpacity>
         {(image!="" && image !=null   ) &&
             <Image source={{uri: image}} style={styles.image_infobox}></Image>
         }
         <Text selectable={true} ellipsizeMode="head" style={styles.resultContent}>{content}</Text>
         {(urls!="" && urls!=null) &&(
             <Fragment>
-                <Text style={styles.resultTitle}>Link:</Text>
+                <Text style={{...styles.resultTitle, color: '#fff', fontSize: 20}}>Link:</Text>
                 {urls.map((urlEntry, i) =>{
-                    return (
-                        <TouchableOpacity>
+                    return (<TouchableOpacity key={i}>
                             <Text onPress={()=>{if(urlEntry.url.length>0){if(Linking.canOpenURL((urlEntry.url.length>0)?urlEntry.url:"http://")){Linking.openURL((urlEntry.url.length>0)?urlEntry.url:"http://");}}}}
                             style={styles.resultTitle}>{urlEntry.title}</Text>
-                         </TouchableOpacity>
-                         )
+                         </TouchableOpacity>)
                 })}
             </Fragment>
         )}
@@ -113,6 +112,5 @@ export default function Infobox({title, url, content, image, engine, urls}) {
                 <Text selectable={true} style={styles.engineText}>{engine}</Text>
             </View>
         )}
-        </TouchableOpacity>
     </View>);
 }

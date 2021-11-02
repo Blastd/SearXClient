@@ -24,7 +24,7 @@ var textRef = "";
 
 const executeSearch = function(queryData, navigation){
   if(queryData.length>0){    
-      navigation.navigate('SearchResultUi', {query: queryData, lang: "it-IT"});
+      navigation.navigate('SearchResultUi', {query: queryData});
   }
 };
 
@@ -65,7 +65,7 @@ export default function StartSearch() {
         borderColor: '#555',
         fontSize: 22,
         paddingHorizontal: 10,
-        color: '#fff'
+        color: '#fff',
       },
       search_button:{
         borderWidth: 2,
@@ -78,14 +78,15 @@ export default function StartSearch() {
         borderTopRightRadius: 12,
         borderBottomRightRadius: 12,
         backgroundColor: '#44bb99',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       },
       search_button_text:{
         fontSize: 25,
         color: 'white',
       },
       search_icon: {
-        marginTop: 4,
-        marginLeft: 7,
         color: '#fff'
       }
   });

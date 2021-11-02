@@ -210,14 +210,16 @@ export default class ResultPage extends React.Component {
             borderTopRightRadius: 12,
             borderBottomRightRadius: 12,
             backgroundColor: '#44bb99',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           },
           search_button_text:{
             fontSize: 25,
             color: 'white',
           },
           search_icon: {
-            marginTop: 4,
-            marginLeft: 7,
+            
             color: '#fff'
           },
           result_container:{
