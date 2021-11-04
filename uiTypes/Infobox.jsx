@@ -85,7 +85,6 @@ export default function Infobox({title, url, content, image, engine, urls}) {
                 break;
         }
     }
-    console.log(image);
     return (<View style={styles.resultBody}>
         <TouchableOpacity>
         <Text selectable={true} onPress={()=>{if(url.length>0){if(Linking.canOpenURL((url.length>0)?url:"http://")){Linking.openURL((url.length>0)?url:"http://");}}}}

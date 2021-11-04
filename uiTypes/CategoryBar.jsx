@@ -15,17 +15,7 @@ export default class CategoryBar extends React.Component {
 
   constructor(props){
     super(props);
-    this.state = {
-        category_general: true,
-        category_videos: true,
-        category_files: true,
-        category_images: false,
-        category_it: true,
-        category_map: true,
-        category_music: true,
-        category_news: true,
-        category_science: true
-    };
+    this.state = props.startingState;
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
   }
 
@@ -81,14 +71,17 @@ export default class CategoryBar extends React.Component {
         changed++;
         break;
     }
-    if(changed>0)
-    this.handleVisibilityChange(this);
+    if(changed>0){
+      console.log(changed);
+      this.handleVisibilityChange(this);
+    }
+    
   }
 
   render(){
       let styles = StyleSheet.create({
         scrollViewStyle:{
-            width: '95%',
+            width: '100%',
             marginTop: 10,
             paddingBottom: 10,
             marginHorizontal: '2.5%'

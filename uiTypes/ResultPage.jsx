@@ -9,7 +9,7 @@ import SingleResult from './SingleResult';
 import ErrorResult from './ErrorResult';
 import CategoryBar from './CategoryBar';
 import Infobox from './Infobox';
-
+let textRef = "";
 /**
  * This is the generic search result page which wraps every search result screen.
  * The query is passed here via props and by default it is given the generic search result.
@@ -17,6 +17,8 @@ import Infobox from './Infobox';
 export default class ResultPage extends React.Component {
 
   constructor(props){
+    var {query} = props.route.params;
+    textRef = query;
     super(props);
     this.loadingRef = React.createRef();
     this.state = {
@@ -25,7 +27,7 @@ export default class ResultPage extends React.Component {
       hasSearched: false,
       errorType: 0,
       pageno: 1,
-      currentQuery: '',
+      currentQuery: query,
       categories: {
         category_general: true,
         category_videos: true,
@@ -57,24 +59,30 @@ export default class ResultPage extends React.Component {
         category_music:   newVisibility.category_music,
         category_news:    newVisibility.category_news,
         category_science: newVisibility.category_science
-      }
+      },
+      hasSearched: false
     });
+    console.log(newVisibility.category_general);
+  }
+
+  updateSearchBox(){
+    if(textRef != this.state.currentQuery)
+    this.setState({currentQuery: textRef, hasSearched: false})
   }
 
   componentDidMount(){
     var {query} = this.props.route.params;
-      if(query.length>0)
-        this.setState({currentQuery: query, hasSearched: false});
+    this.setState({hasSearched: false});
   }
 
   async componentDidUpdate(){
+    console.log(this.state.categories.category_general);
     if(this.state.hasSearched == false){
       var result = await ExecuteSearch(this.state.currentQuery, this.state.currentInstance, 0, this.state.pageno, this.state.categories);
-      console.log(Object.keys(result));
       this.setState(result);
     }
   }
-
+  
   parseResults(){
 
     let styles = StyleSheet.create({
@@ -99,22 +107,18 @@ export default class ResultPage extends React.Component {
         color:'#fff'
       }
     });
-    console.log("parsing results");
     let resultsObj = this.state.results;
-    console.log(typeof resultsObj);
     if(typeof resultsObj !== 'object'){
       resultsObj = JSON.parse(this.state.results);
     }
     let infoboxList = null;
     if(Object.keys(resultsObj.infoboxes).length>0){
-      console.log("There are infoboxes");
       infoboxList = (<Fragment>
         {resultsObj.infoboxes.map((infoboxEntry, i) =>{
          return (<Infobox title={infoboxEntry.infobox} url={infoboxEntry.id} content={infoboxEntry.content} image={infoboxEntry.img_src} engine={infoboxEntry.engine} urls={infoboxEntry.urls}/>)
         })} 
       </Fragment>);     
     }
-    console.log(resultsObj.results.length);
     return (<Fragment>
       {infoboxList}
 
@@ -219,17 +223,16 @@ export default class ResultPage extends React.Component {
         else
           resultEntries = this.parseResults();
       }
-
       return(
         <SafeAreaView style={styles.container}>
             <View style={styles.search_box_container}>
-              <TextInput onChangeText={value=>{this.setState({currentQuery: value}); console.log(value);}} defaultValue={this.state.currentQuery} style={styles.search_box} returnKeyType='search'></TextInput>
-              <TouchableHighlight style={styles.search_button} onPress={()=>{}}>
+              <TextInput onChangeText={value=>{textRef = value;}} onSubmitEditing={this.updateSearchBox()} defaultValue={this.state.currentQuery} style={styles.search_box} returnKeyType='search'></TextInput>
+              <TouchableHighlight style={styles.search_button} onPress={()=>{this.setState({currentQuery: textRef, hasSearched: false})}}>
                   <FontAwesomeIcon size={20} icon={ faSearch } style={styles.search_icon}/>
               </TouchableHighlight>
             </View>
             <View style={styles.result_container}>
-            <CategoryBar onChangeVisibility={this.updateVisibility}/>
+            <CategoryBar onChangeVisibility={this.updateVisibility} startingState={this.state.categories}/>
             <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
               <Progress.Bar ref={this.loadingRef} indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
                 {resultEntries}
