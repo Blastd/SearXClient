@@ -31,13 +31,13 @@ export default class ResultPage extends React.Component {
       categories: {
         category_general: true,
         category_videos: true,
-        category_files: true,
+        category_files: false,
         category_images: false,
-        category_it: true,
+        category_it: false,
         category_map: true,
-        category_music: true,
+        category_music: false,
         category_news: true,
-        category_science: true
+        category_science: false
       }
     };
     this.updateVisibility = this.updateVisibility.bind(this);
@@ -62,7 +62,6 @@ export default class ResultPage extends React.Component {
       },
       hasSearched: false
     });
-    console.log(newVisibility.category_general);
   }
 
   updateSearchBox(){
@@ -76,7 +75,6 @@ export default class ResultPage extends React.Component {
   }
 
   async componentDidUpdate(){
-    console.log(this.state.categories.category_general);
     if(this.state.hasSearched == false){
       var result = await ExecuteSearch(this.state.currentQuery, this.state.currentInstance, 0, this.state.pageno, this.state.categories);
       this.setState(result);
@@ -123,7 +121,7 @@ export default class ResultPage extends React.Component {
       {infoboxList}
 
       {resultsObj.results.map((resultEntry, i) => {
-        return (<SingleResult key={i} title={resultEntry.title} pretty_url={resultEntry.pretty_url} url={resultEntry.url} content={resultEntry.content} engine={resultEntry.engine}/>)
+        return (<SingleResult key={i} title={resultEntry.title} pretty_url={resultEntry.pretty_url} url={resultEntry.url} category={resultEntry.category} content={resultEntry.content} engine={resultEntry.engine} data={resultEntry}/>)
       })}
       {Object.keys(resultsObj.results).length==0 &&
       <TouchableHighlight onPress={()=>{this.setState({results: null, errorType: 0, currentInstance: null,  hasSearched: false})}}>
@@ -139,7 +137,7 @@ export default class ResultPage extends React.Component {
           <FontAwesomeIcon style={styles.pageButton} size={20} icon={ faArrowRight }/>
         </TouchableOpacity>
       </View>
-      <SingleResult key={resultsObj.results.length+1} title={this.state.currentQuery} pretty_url={""} url={""} content={"Instance: " + this.state.currentInstance}/>
+      <SingleResult key={resultsObj.results.length+1} title={this.state.currentQuery} pretty_url={""} url={""} content={"Instance: " + this.state.currentInstance} category={"general"} data={{}}/>
     </Fragment>);
     
   }
@@ -226,7 +224,7 @@ export default class ResultPage extends React.Component {
       return(
         <SafeAreaView style={styles.container}>
             <View style={styles.search_box_container}>
-              <TextInput onChangeText={value=>{textRef = value;}} onSubmitEditing={this.updateSearchBox()} defaultValue={this.state.currentQuery} style={styles.search_box} returnKeyType='search'></TextInput>
+              <TextInput onChangeText={value=>{textRef = value;}} onSubmitEditing={()=>{if(textRef != this.state.currentQuery)this.setState({currentQuery: textRef, hasSearched: false})}} defaultValue={this.state.currentQuery} style={styles.search_box} returnKeyType='search'></TextInput>
               <TouchableHighlight style={styles.search_button} onPress={()=>{this.setState({currentQuery: textRef, hasSearched: false})}}>
                   <FontAwesomeIcon size={20} icon={ faSearch } style={styles.search_icon}/>
               </TouchableHighlight>
@@ -234,7 +232,7 @@ export default class ResultPage extends React.Component {
             <View style={styles.result_container}>
             <CategoryBar onChangeVisibility={this.updateVisibility} startingState={this.state.categories}/>
             <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
-              <Progress.Bar ref={this.loadingRef} indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
+              <Progress.Bar ref={this.loadingRef} unfilledColor="#444" borderWidth={0} color="#44bb99" indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
                 {resultEntries}
             </ScrollView>
             </View>

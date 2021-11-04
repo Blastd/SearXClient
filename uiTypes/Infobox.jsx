@@ -58,9 +58,10 @@ export default function Infobox({title, url, content, image, engine, urls}) {
         },
         image_infobox:{
             width: '100%',
-            height: 200,
+            height: 300,
             resizeMode: 'contain',
-            marginBottom: 10
+            marginBottom: 10,
+            borderRadius: 5,
         }
     });
     let engineIcon = null;
@@ -70,6 +71,7 @@ export default function Infobox({title, url, content, image, engine, urls}) {
                 engineIcon = <FontAwesomeIcon style={styles.engineIcon} size={20} icon={ faGoogle }/>;
                 break;
             case 'yahoo':
+            case 'yahoo news':
                 engineIcon = <FontAwesomeIcon style={styles.engineIcon} size={20} icon={ faYahoo }/>;
                 break;
             case 'duckduckgo':

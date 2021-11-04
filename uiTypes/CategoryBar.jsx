@@ -16,15 +16,7 @@ export default class CategoryBar extends React.Component {
   constructor(props){
     super(props);
     this.state = props.startingState;
-    this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
-  }
-
-  /**
-   * Handles Visibility change in search results, by updating parent's state
-   *  @returns void
-   */
-  handleVisibilityChange(e) {
-    this.props.onChangeVisibility(e.state);
+    //this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
   }
 
   /**
@@ -32,50 +24,42 @@ export default class CategoryBar extends React.Component {
    * @returns void
    */
   handleClick(keyName){
-    let changed = 0;
+    let currentState = this.state;
     switch(keyName){
       case 'general':
-        this.setState({category_general: !this.state.category_general});
-        changed++;
+        if(currentState.category_images == true && currentState.category_general == false)
+          currentState.category_images= false;
+        currentState.category_general = !currentState.category_general;
         break;
       case 'videos':
-        this.setState({category_videos: !this.state.category_videos});
-        changed++;
+        currentState.category_videos= !currentState.category_videos;
         break;
       case 'files':
-        this.setState({category_files: !this.state.category_files});
-        changed++;
+        currentState.category_files= !currentState.category_files;
         break;
       case 'images':
-        this.setState({category_images: !this.state.category_images});
-        changed++;
+        if(currentState.category_images == false && currentState.category_general == true)
+          currentState.category_general = false;
+        currentState.category_images= !currentState.category_images;
         break;
       case 'it':
-        this.setState({category_it: !this.state.category_it});
-        changed++;
+        currentState.category_it= !currentState.category_it;
         break;
       case 'map':
-        this.setState({category_map: !this.state.category_map});
-        changed++;
+        currentState.category_map= !currentState.category_map;
         break;
       case 'music':
-        this.setState({category_music: !this.state.category_music});
-        changed++;
+        currentState.category_music= !currentState.category_music;
         break;
       case 'news':
-        this.setState({category_news: !this.state.category_news});
-        changed++;
+        currentState.category_news= !currentState.category_news;
         break;
       case 'science':
-        this.setState({category_science: !this.state.category_science});
-        changed++;
+        currentState.category_science= !currentState.category_science;
         break;
     }
-    if(changed>0){
-      console.log(changed);
-      this.handleVisibilityChange(this);
-    }
-    
+    this.props.onChangeVisibility(currentState);
+    this.setState(currentState);
   }
 
   render(){
@@ -84,7 +68,6 @@ export default class CategoryBar extends React.Component {
             width: '100%',
             marginTop: 10,
             paddingBottom: 10,
-            marginHorizontal: '2.5%'
         },
         barStyle: {
           display: 'flex',
@@ -110,7 +93,7 @@ export default class CategoryBar extends React.Component {
             paddingBottom: 15,
             textAlignVertical: 'center',
             borderRadius: 40,
-            marginHorizontal: 5,
+            marginHorizontal: 15,
             textDecorationLine: 'line-through'
         }
       });
@@ -122,8 +105,10 @@ export default class CategoryBar extends React.Component {
               <Text style={{...styles.buttonStyle, ...this.state.category_videos?styles.buttonStyleOn:null}} key="videos" onPress={(e)=>{this.handleClick("videos")}}>Videos</Text>
               <Text style={{...styles.buttonStyle, ...this.state.category_news?styles.buttonStyleOn:null}} key="news" onPress={(e)=>{this.handleClick("news")}}>News</Text>
               <Text style={{...styles.buttonStyle, ...this.state.category_music?styles.buttonStyleOn:null}} key="music" onPress={(e)=>{this.handleClick("music")}} >Music</Text>
+              <Text style={{...styles.buttonStyle, ...this.state.category_map?styles.buttonStyleOn:null}} key="map" onPress={(e)=>{this.handleClick("map")}} >Maps</Text>
               <Text style={{...styles.buttonStyle, ...this.state.category_files?styles.buttonStyleOn:null}} key="files" onPress={(e)=>{this.handleClick("files")}}>Files</Text>
               <Text style={{...styles.buttonStyle, ...this.state.category_science?styles.buttonStyleOn:null}} key="science" onPress={(e)=>{this.handleClick("science")}}>Science</Text>
+              <Text style={{...styles.buttonStyle, ...this.state.category_it?styles.buttonStyleOn:null}} key="it" onPress={(e)=>{this.handleClick("it")}}>IT</Text>
           </ScrollView>
       );
   }
