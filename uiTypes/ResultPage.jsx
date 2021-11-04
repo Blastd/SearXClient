@@ -28,7 +28,23 @@ export default class ResultPage extends React.Component {
       hasSearched: false,
       errorType: 0,
       pageno: 1,
+      categories: {
+        category_general: true,
+        category_videos: true,
+        category_files: true,
+        category_images: false,
+        category_it: true,
+        category_map: true,
+        category_music: true,
+        category_news: true,
+        category_science: true
+      }
     };
+    this.updateVisibility = this.updateVisibility.bind(this);
+  }
+
+  GetParent(){
+    return this;
   }
 
   RunPrintCommand = function(address, data){
@@ -68,6 +84,26 @@ export default class ResultPage extends React.Component {
         this.setState({results: result, errorType: 0, currentInstance: url,  hasSearched: true});
       }
   };
+
+/**
+ * Updates visibility in Result page root
+ * @param {state} newVisibility is the Category Bar updated state
+ */
+  updateVisibility(newVisibility){
+    this.setState({
+      categories:{
+        category_general: newVisibility.category_general,
+        category_videos:  newVisibility.category_videos,
+        category_files:   newVisibility.category_files,
+        category_images:  newVisibility.category_images,
+        category_it:      newVisibility.category_it,
+        category_map:     newVisibility.category_map,
+        category_music:   newVisibility.category_music,
+        category_news:    newVisibility.category_news,
+        category_science: newVisibility.category_science
+      }
+    });
+  }
 
   parseResults = function(){
 
@@ -227,7 +263,7 @@ export default class ResultPage extends React.Component {
                 </TouchableHighlight>
               </View>
               <View style={styles.result_container}>
-              <CategoryBar/>
+              <CategoryBar onChangeVisibility={this.updateVisibility}/>
               <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
                   {resultEntries}
               </ScrollView>
