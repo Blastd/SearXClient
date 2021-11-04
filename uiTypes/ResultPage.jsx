@@ -1,18 +1,14 @@
 import React, { Fragment } from 'react';
 import { View, Text, NativeModules, StyleSheet, SafeAreaView, ScrollView, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
+import { ExecuteSearch, InitSearch } from '../lib/network';
+import * as Progress from 'react-native-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { Sanitizer } from 'sanitize';
 import SingleResult from './SingleResult';
 import ErrorResult from './ErrorResult';
 import CategoryBar from './CategoryBar';
 import Infobox from './Infobox';
-import {loadLanguage} from '../lib/languageMan';
-import {RequestData} from '../lib/network';
-import {hasJsonStructure, ObjectFilter} from '../lib/objects';
-
-var textRef = "";
 
 /**
  * This is the generic search result page which wraps every search result screen.
@@ -22,12 +18,14 @@ export default class ResultPage extends React.Component {
 
   constructor(props){
     super(props);
+    this.loadingRef = React.createRef();
     this.state = {
       results: null,
       currentInstance: 'https://searx.sunless.cloud/',
       hasSearched: false,
       errorType: 0,
       pageno: 1,
+      currentQuery: '',
       categories: {
         category_general: true,
         category_videos: true,
@@ -42,48 +40,6 @@ export default class ResultPage extends React.Component {
     };
     this.updateVisibility = this.updateVisibility.bind(this);
   }
-
-  GetParent(){
-    return this;
-  }
-
-  RunPrintCommand = function(address, data){
-    console.log(address);
-    if(data.version!=null)
-    console.log(data.version);
-    console.log("-----------------------");
-    return true;
-    
-  };
-
-  executeSearch = async function(queryData, newInstance, currAttempts) {
-      if(queryData.length<0)return;
-      return;
-      let lang = await loadLanguage();
-      var max = 5;
-      var attempts = (currAttempts!=null)?currAttempts:0;
-      console.log("attempt " + attempts);
-      console.log("mem instance: " + this.state.currentInstance);
-      var url = (newInstance!=null)?newInstance:((this.state.currentInstance!=null)?this.state.currentInstance:await this.getInstance());
-      //if(url == null) url = "https://searx.sunless.cloud/"; //Fallback
-      var sanitizer = new Sanitizer();
-      var saneInput = sanitizer.str(queryData);
-      var encodedQueryData = encodeURIComponent(saneInput);
-      var urlParameter = "q=" + encodedQueryData + "&language=" + lang.replace("_", "-") + "&pageno=" + this.state.pageno + "&format=json";
-      console.log(url+ 'search' + "?"+urlParameter);
-      var result = await RequestData(url+'search', 'POST', urlParameter);
-      if(result.error !=null){
-        if(attempts<5){
-          attempts+=1;
-          this.executeSearch(queryData, url, attempts);
-        }else{
-          this.setState({errorType: 429, hasSearched: true});  
-        }
-      }else{
-        console.log("updating state result = " + typeof result);
-        this.setState({results: result, errorType: 0, currentInstance: url,  hasSearched: true});
-      }
-  };
 
 /**
  * Updates visibility in Result page root
@@ -105,7 +61,21 @@ export default class ResultPage extends React.Component {
     });
   }
 
-  parseResults = function(){
+  componentDidMount(){
+    var {query} = this.props.route.params;
+      if(query.length>0)
+        this.setState({currentQuery: query, hasSearched: false});
+  }
+
+  async componentDidUpdate(){
+    if(this.state.hasSearched == false){
+      var result = await ExecuteSearch(this.state.currentQuery, this.state.currentInstance, 0, this.state.pageno, this.state.categories);
+      console.log(Object.keys(result));
+      this.setState(result);
+    }
+  }
+
+  parseResults(){
 
     let styles = StyleSheet.create({
       pageVisualizer: {
@@ -165,16 +135,12 @@ export default class ResultPage extends React.Component {
           <FontAwesomeIcon style={styles.pageButton} size={20} icon={ faArrowRight }/>
         </TouchableOpacity>
       </View>
-      <SingleResult key={resultsObj.results.length+1} title={textRef} pretty_url={""} url={""} content={""}/>
+      <SingleResult key={resultsObj.results.length+1} title={this.state.currentQuery} pretty_url={""} url={""} content={"Instance: " + this.state.currentInstance}/>
     </Fragment>);
     
   }
 
   render(){
-      var {query} = this.props.route.params;
-      if(query && this.state.hasSearched == false)
-          this.executeSearch(textRef!=""?textRef:query);
-
       var styles = StyleSheet.create({
           container: {
             flex: 1,
@@ -255,20 +221,21 @@ export default class ResultPage extends React.Component {
       }
 
       return(
-          <SafeAreaView style={styles.container}>
-              <View style={styles.search_box_container}>
-                <TextInput onChangeText={value=>{textRef = value; console.log(value);}} defaultValue={query} onSubmitEditing={(e)=>{this.executeSearch(textRef);}} style={styles.search_box} returnKeyType='search'></TextInput>
-                <TouchableHighlight style={styles.search_button} onPress={()=>{this.executeSearch(textRef)}}>
-                    <FontAwesomeIcon size={20} icon={ faSearch } style={styles.search_icon}/>
-                </TouchableHighlight>
-              </View>
-              <View style={styles.result_container}>
-              <CategoryBar onChangeVisibility={this.updateVisibility}/>
-              <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
-                  {resultEntries}
-              </ScrollView>
-              </View>
-          </SafeAreaView>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.search_box_container}>
+              <TextInput onChangeText={value=>{this.setState({currentQuery: value}); console.log(value);}} defaultValue={this.state.currentQuery} style={styles.search_box} returnKeyType='search'></TextInput>
+              <TouchableHighlight style={styles.search_button} onPress={()=>{}}>
+                  <FontAwesomeIcon size={20} icon={ faSearch } style={styles.search_icon}/>
+              </TouchableHighlight>
+            </View>
+            <View style={styles.result_container}>
+            <CategoryBar onChangeVisibility={this.updateVisibility}/>
+            <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
+              <Progress.Bar ref={this.loadingRef} indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
+                {resultEntries}
+            </ScrollView>
+            </View>
+        </SafeAreaView>
       );
   }
 }
