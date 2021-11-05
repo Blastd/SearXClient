@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { View, Text, NativeModules, StyleSheet, SafeAreaView, FlatList, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
+import { View, Text, NativeModules, StyleSheet, FlatList, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ExecuteSearch, InitSearch } from '../lib/network';
 import * as Progress from 'react-native-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -239,9 +240,10 @@ export default class ResultPage extends React.Component {
               </TouchableHighlight>
             </View>
             <View style={styles.result_container}>
+            {/*<Text onPress={()=>{this.flatListRef.scrollToOffset({ animated: true, offset: 0 })}} style={{textAlign: 'center', color:'#fff'}}>Scroll to top</Text>*/}
             <CategoryBar onChangeVisibility={this.updateVisibility} startingState={this.state.categories}/>
-            <Progress.Bar ref={this.loadingRef} unfilledColor="#444" borderWidth={0} color="#44bb99" indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
-            <FlatList data={resultEntries} renderItem={renderItem} keyExtractor={item => item.key} style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}/>
+            <Progress.Bar ref={this.loadingRef} unfilledColor="#444" borderWidth={0} color="#44bb99" indeterminate={true} width={null} style={{width: '100%', display:(this.state.hasSearched)?'none':'flex'}}/>
+            <FlatList ref={(ref) => { this.flatListRef = ref; }} data={resultEntries} renderItem={renderItem} keyExtractor={item => item.key} style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}/>
             </View>
         </SafeAreaView>
       );

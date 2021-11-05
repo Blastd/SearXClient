@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faMicrosoft, faWikipediaW, faGoogle, faYahoo, faYoutube, faDailymotion, faPinterest, faVimeo } from '@fortawesome/free-brands-svg-icons';
-import { faKiwiBird, faPlayCircle, faMap, faMeteor} from '@fortawesome/free-solid-svg-icons';
-
+import { faKiwiBird, faPlayCircle, faMap, faMeteor, faSearch} from '@fortawesome/free-solid-svg-icons';
 import {
     StyleSheet,
     Text,
@@ -91,7 +90,7 @@ export default function SingleResult({url, pretty_url, title, content, engine, c
                 break;
             case 'duckduckgo':
             case 'ddg definitions':
-                engineIcon = <FontAwesomeIcon style={styles.engineIcon} size={20} icon={ faKiwiBird }/>;
+                engineIcon = <FontAwesomeIcon style={styles.engineIcon} size={20} icon={ faSearch }/>;
                 break;
             case 'bing':
             case 'bing videos':
@@ -120,6 +119,9 @@ export default function SingleResult({url, pretty_url, title, content, engine, c
                 break;
             case 'photon':
                 engineIcon = <FontAwesomeIcon style={styles.engineIcon} size={20} icon={ faMeteor }/>;
+                break;
+            default:
+                engineIcon = <FontAwesomeIcon style={styles.engineIcon} size={20} icon={ faSearch }/>;
                 break;
         }
     }

@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { View, Text, NativeModules, StyleSheet, SafeAreaView, ScrollView, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
+import { View, Text, NativeModules, StyleSheet, SafeAreaView, ScrollView, Image, TextInput, TouchableOpacity} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -68,6 +68,7 @@ export default class CategoryBar extends React.Component {
             width: '100%',
             marginTop: 5,
             paddingBottom: 10,
+            minHeight: 68
         },
         barStyle: {
           display: 'flex',
@@ -78,37 +79,58 @@ export default class CategoryBar extends React.Component {
         buttonStyleOn: {
             textDecorationStyle: 'solid',
             textDecorationColor: '#000',
-            backgroundColor: '#111',
-            color: '#fff',
-            textDecorationLine: 'none'
+            backgroundColor: '#333',
+            color: '#37de9f',
+            textDecorationLine: 'none',
+            borderColor: '#555',
         },
         buttonStyle: {
             flex: 1,
             flexBasis: 0,
-            color: '#22aa77',
+            color: '#777',
             backgroundColor: '#1a1a1a',
-            fontSize: 20,
+            fontSize: 18,
             paddingHorizontal: 15,
-            paddingTop: 10,
-            paddingBottom: 10,
-            textAlignVertical: 'center',
+            paddingVertical: 15,
+            paddingBottom: 20,
             borderRadius: 40,
-            marginHorizontal: 15,
-            textDecorationLine: 'line-through'
+            marginHorizontal: 5,
+            borderWidth: 3,
+            borderStyle: 'solid',
+            borderColor: '#333',
+            textAlign: 'center',
         }
       });
       
       return (
           <ScrollView scrollEnabled={true} horizontal={true} style={styles.scrollViewStyle} contentContainerStyle={styles.barStyle}>
-              <Text style={{...styles.buttonStyle, ...this.state.category_general?styles.buttonStyleOn:null}} key="general" onPress={(e)=>{this.handleClick("general")}}>General</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_images?styles.buttonStyleOn:null}} key="images" onPress={(e)=>{this.handleClick("images")}}>Pictures</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_videos?styles.buttonStyleOn:null}} key="videos" onPress={(e)=>{this.handleClick("videos")}}>Videos</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_news?styles.buttonStyleOn:null}} key="news" onPress={(e)=>{this.handleClick("news")}}>News</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_music?styles.buttonStyleOn:null}} key="music" onPress={(e)=>{this.handleClick("music")}} >Music</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_map?styles.buttonStyleOn:null}} key="map" onPress={(e)=>{this.handleClick("map")}} >Maps</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_files?styles.buttonStyleOn:null}} key="files" onPress={(e)=>{this.handleClick("files")}}>Files</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_science?styles.buttonStyleOn:null}} key="science" onPress={(e)=>{this.handleClick("science")}}>Science</Text>
-              <Text style={{...styles.buttonStyle, ...this.state.category_it?styles.buttonStyleOn:null}} key="it" onPress={(e)=>{this.handleClick("it")}}>IT</Text>
+              <TouchableOpacity key="general" onPress={(e)=>{this.handleClick("general")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_general?styles.buttonStyleOn:null}}>General</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="images" onPress={(e)=>{this.handleClick("images")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_images?styles.buttonStyleOn:null}}>Pictures</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="videos" onPress={(e)=>{this.handleClick("videos")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_videos?styles.buttonStyleOn:null}}>Videos</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="news" onPress={(e)=>{this.handleClick("news")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_news?styles.buttonStyleOn:null}}>News</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="music" onPress={(e)=>{this.handleClick("music")}} >
+                <Text style={{...styles.buttonStyle, ...this.state.category_music?styles.buttonStyleOn:null}}>Music</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="map" onPress={(e)=>{this.handleClick("map")}} >
+                <Text style={{...styles.buttonStyle, ...this.state.category_map?styles.buttonStyleOn:null}}>Maps</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="files" onPress={(e)=>{this.handleClick("files")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_files?styles.buttonStyleOn:null}}>Files</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="science" onPress={(e)=>{this.handleClick("science")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_science?styles.buttonStyleOn:null}}>Science</Text>
+              </TouchableOpacity>
+              <TouchableOpacity key="it" onPress={(e)=>{this.handleClick("it")}}>
+                <Text style={{...styles.buttonStyle, ...this.state.category_it?styles.buttonStyleOn:null}}>IT</Text>
+              </TouchableOpacity>
           </ScrollView>
       );
   }
