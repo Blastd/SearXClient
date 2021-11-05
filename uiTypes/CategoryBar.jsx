@@ -27,8 +27,8 @@ export default class CategoryBar extends React.Component {
     let currentState = this.state;
     switch(keyName){
       case 'general':
-        if(currentState.category_images == true && currentState.category_general == false)
-          currentState.category_images= false;
+        /*if(currentState.category_images == true && currentState.category_general == false)
+          currentState.category_images= false;*/
         currentState.category_general = !currentState.category_general;
         break;
       case 'videos':
@@ -38,8 +38,8 @@ export default class CategoryBar extends React.Component {
         currentState.category_files= !currentState.category_files;
         break;
       case 'images':
-        if(currentState.category_images == false && currentState.category_general == true)
-          currentState.category_general = false;
+        /*if(currentState.category_images == false && currentState.category_general == true)
+          currentState.category_general = false;*/
         currentState.category_images= !currentState.category_images;
         break;
       case 'it':
@@ -66,7 +66,7 @@ export default class CategoryBar extends React.Component {
       let styles = StyleSheet.create({
         scrollViewStyle:{
             width: '100%',
-            marginTop: 10,
+            marginTop: 5,
             paddingBottom: 10,
         },
         barStyle: {
@@ -87,10 +87,10 @@ export default class CategoryBar extends React.Component {
             flexBasis: 0,
             color: '#22aa77',
             backgroundColor: '#1a1a1a',
-            fontSize: 25,
+            fontSize: 20,
             paddingHorizontal: 15,
             paddingTop: 10,
-            paddingBottom: 15,
+            paddingBottom: 10,
             textAlignVertical: 'center',
             borderRadius: 40,
             marginHorizontal: 15,

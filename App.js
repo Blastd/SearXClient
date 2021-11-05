@@ -32,7 +32,6 @@ export default function App() {
 
   return (
     <Fragment>
-      <StatusBar backgroundColor="#22aa77" barStyle="default"/>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen

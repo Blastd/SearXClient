@@ -20,7 +20,8 @@ export default function SingleResult({url, pretty_url, title, content, engine, c
     let styles = StyleSheet.create({
         resultBody: {
             backgroundColor: '#444',
-            width: '95%',
+            maxWidth: '95%',
+            minWidth: '95%',
             padding: 10,
             marginVertical: 5,
             borderRadius: 10,
@@ -41,6 +42,7 @@ export default function SingleResult({url, pretty_url, title, content, engine, c
             color: '#fff',
             fontWeight: '400',
             fontSize: 15,
+            textAlign: 'justify'
         },
         engineText:{
             textAlign: 'right',

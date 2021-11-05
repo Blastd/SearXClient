@@ -20,7 +20,8 @@ export default function Infobox({title, url, content, image, engine, urls}) {
     let styles = StyleSheet.create({
         resultBody: {
             backgroundColor: '#444',
-            width: '95%',
+            maxWidth: '95%',
+            minWidth: '95%',
             padding: 10,
             marginVertical: 5,
             borderRadius: 10,
@@ -55,6 +56,12 @@ export default function Infobox({title, url, content, image, engine, urls}) {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'flex-end'
+        },
+        image_center:{
+            display: 'flex',
+            flexDirection: 'row',
+            alignContent: 'center',
+            justifyContent: 'center',
         },
         image_infobox:{
             width: '100%',
@@ -93,7 +100,9 @@ export default function Infobox({title, url, content, image, engine, urls}) {
          style={styles.resultTitle}>{title}</Text>
          </TouchableOpacity>
         {(image!="" && image !=null   ) &&
-            <Image source={{uri: image}} style={styles.image_infobox}></Image>
+            <View style={styles.image_center}>
+                <Image source={{uri: image}} style={styles.image_infobox}></Image>
+            </View>
         }
         <Text selectable={true} ellipsizeMode="head" style={styles.resultContent}>{content}</Text>
         {(urls!="" && urls!=null) &&(

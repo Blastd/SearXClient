@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { View, Text, NativeModules, StyleSheet, SafeAreaView, ScrollView, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
+import { View, Text, NativeModules, StyleSheet, SafeAreaView, FlatList, Image, TextInput, TouchableHighlight, TouchableOpacity} from 'react-native';
 import { ExecuteSearch, InitSearch } from '../lib/network';
 import * as Progress from 'react-native-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -9,6 +9,7 @@ import SingleResult from './SingleResult';
 import ErrorResult from './ErrorResult';
 import CategoryBar from './CategoryBar';
 import Infobox from './Infobox';
+import ResultType from './ResultType';
 let textRef = "";
 /**
  * This is the generic search result page which wraps every search result screen.
@@ -31,13 +32,13 @@ export default class ResultPage extends React.Component {
       categories: {
         category_general: true,
         category_videos: true,
-        category_files: false,
+        category_files: true,
         category_images: false,
         category_it: false,
         category_map: true,
-        category_music: false,
+        category_music: true,
         category_news: true,
-        category_science: false
+        category_science: true
       }
     };
     this.updateVisibility = this.updateVisibility.bind(this);
@@ -82,7 +83,6 @@ export default class ResultPage extends React.Component {
   }
   
   parseResults(){
-
     let styles = StyleSheet.create({
       pageVisualizer: {
         backgroundColor: '#444',
@@ -105,11 +105,24 @@ export default class ResultPage extends React.Component {
         color:'#fff'
       }
     });
+
+    let newDataList = [];
+
     let resultsObj = this.state.results;
     if(typeof resultsObj !== 'object'){
       resultsObj = JSON.parse(this.state.results);
     }
-    let infoboxList = null;
+    resultsObj.infoboxes.map((infoboxEntry, i) =>{
+      let newKey = "infobox-" + i;
+      newDataList.push({...infoboxEntry, category: 'infobox', key: newKey});
+    });
+
+    resultsObj.results.map((resultEntry, i) => {
+      let newKey = "result-"+i;
+      newDataList.push({...resultEntry, key: newKey});
+    });
+    return newDataList;
+    /*let infoboxList = null;
     if(Object.keys(resultsObj.infoboxes).length>0){
       infoboxList = (<Fragment>
         {resultsObj.infoboxes.map((infoboxEntry, i) =>{
@@ -138,31 +151,25 @@ export default class ResultPage extends React.Component {
         </TouchableOpacity>
       </View>
       <SingleResult key={resultsObj.results.length+1} title={this.state.currentQuery} pretty_url={""} url={""} content={"Instance: " + this.state.currentInstance} category={"general"} data={{}}/>
-    </Fragment>);
-    
+    </Fragment>);*/
   }
 
   render(){
       var styles = StyleSheet.create({
           container: {
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            backgroundColor: "#222222",
-            justifyContent: "center",
+            backgroundColor: "#222222"
           },
           search_box_container:{
-            width: '100%',
             display: 'flex',
             flexDirection: 'row',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             justifyContent: 'center',
-            marginTop: 180,
-            marginBottom: 10
+            marginTop: 5,
+            marginBottom: 5
           },
           scroll_box:{
             display: 'flex',
+            width: '100%',
             flexDirection: 'column',
             alignItems: 'center',
           },
@@ -190,8 +197,6 @@ export default class ResultPage extends React.Component {
             borderWidth: 2,
             borderLeftWidth: 0,
             borderColor: '#555',
-            flex: 0,
-            padding: 10,
             height: 52,
             width: '15%',
             borderTopRightRadius: 12,
@@ -211,16 +216,20 @@ export default class ResultPage extends React.Component {
           },
           result_container:{
               width: '100%',
-              marginTop: 0,
           },
       });
-      let resultEntries = (<Fragment></Fragment>);
+      let resultEntries = [];
       if(this.state.results!=null){
         if(this.state.results.message !=null)
-          resultEntries = (<Fragment><Text>Error Too many attempts</Text></Fragment>)
+          resultEntries = [{category: 'general', content: 'Too many requests', key:'error_key'}];
         else
           resultEntries = this.parseResults();
       }
+
+      const renderItem = ({item})=>(
+        <ResultType data={item} />
+      );
+
       return(
         <SafeAreaView style={styles.container}>
             <View style={styles.search_box_container}>
@@ -231,10 +240,8 @@ export default class ResultPage extends React.Component {
             </View>
             <View style={styles.result_container}>
             <CategoryBar onChangeVisibility={this.updateVisibility} startingState={this.state.categories}/>
-            <ScrollView style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}>
-              <Progress.Bar ref={this.loadingRef} unfilledColor="#444" borderWidth={0} color="#44bb99" indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
-                {resultEntries}
-            </ScrollView>
+            <Progress.Bar ref={this.loadingRef} unfilledColor="#444" borderWidth={0} color="#44bb99" indeterminate={true} width={null} style={{width: '95%', display:(this.state.hasSearched)?'none':'flex'}}/>
+            <FlatList data={resultEntries} renderItem={renderItem} keyExtractor={item => item.key} style={styles.scroll_box_styles} contentContainerStyle={styles.scroll_box}/>
             </View>
         </SafeAreaView>
       );
